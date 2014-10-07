@@ -1,0 +1,26 @@
+<table class="table table-striped">
+ <thead>
+  <tr>
+   <th>EAN</th>
+   <th>Brand name</th>
+   <th>Product name</th>
+   <th>Category</th>
+   <th>Sub-category</th>
+   <th>INCI</th>
+   <th>Photo</th>
+   <th>Product description</th>
+  </tr>
+ </thead>
+ <tbody>
+  <tr ng-repeat="item in store.products">
+   <td>{{item.product.EAN}}</td>
+   <td>{{item.product.Brand}}</td>
+   <td>{{item.product.Name}}</td>
+   <td>{{item.product.Category}}</td>
+   <td>{{item.product.SubCategory}}</td>
+   <td>{{item.product.INCI}}</td>
+   <td>{{item.product.Photo}}</td>
+   <td>{{item.product.Description}}</td>
+  </tr>
+ </tbody>
+</table>
