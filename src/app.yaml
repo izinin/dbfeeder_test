@@ -9,6 +9,9 @@ handlers:
 - url: /js
   static_dir: js
 
+- url: /lib
+  static_dir: lib
+
 - url: /templates
   static_dir: templates
 
