@@ -57,18 +57,18 @@
     return {
       restrict: "E",
       templateUrl: "/templates/store-list-search.html",
-      controller: function($scope){
+      controller: function($scope,$timeout){
         var self = this;
         self.subj = "";
-        self.isTimerRunning = false;
+        $scope.isTimerRunning = false;
         $scope.dataChanged = function(value){
-          if(self.isTimerRunning){
+          if($scope.isTimerRunning){
             return;
           }
-          self.isTimerRunning = true;
+          $scope.isTimerRunning = true;
           
-          setTimeout(function(){
-            self.isTimerRunning = false;
+          $timeout(function(){
+            $scope.isTimerRunning = false;
             singleton.searchDBPrev = singleton.searchDBVal;
             singleton.searchDBVal = value;
             singleton.updateResultSet();

@@ -1,6 +1,8 @@
 <div class="input-group" style="margin-top: 15px;">
-  <span class="glyphicon glyphicon-search" ng-hide="storeseach.isTimerRunning"></span>
-  <img alt="" src="img/ajax-loader.gif" ng-show="storeseach.isTimerRunning">
+  <span class="input-group-addon">
+    <span class="glyphicon glyphicon-search" ng-hide="isTimerRunning"></span>
+    <img alt="" src="img/ajax-loader.gif" ng-show="isTimerRunning">
+  </span>
   <input type="text" class="form-control" 
     placeholder="Search for category keyword" 
     ng-model="storeseach.subj"
