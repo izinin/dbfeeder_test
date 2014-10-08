@@ -7,8 +7,12 @@
   
   app.factory('singleton', function($rootScope) {
 	  var singleton = {
+	    searchFieldName: "category",
 		  searchDBVal: "",
-		  serachDBPrev: ""
+		  searchDBPrev: "",
+		  updateResultSet: function(){
+		    $rootScope.$broadcast('onUpdateResultSet');
+		  }
 	  };
 	  return singleton;
   });
@@ -18,25 +22,60 @@
 	  return {
 		  restrict: "E",
 		  templateUrl: "/templates/store-list-products.html",
-		  controller: function(){
-			  //guard code
-			  if(!_.isEmpty(singleton.searchDBVal) && singleton.searchDBVal == singleton.serachDBPrev){
-			    return;
-			  }
-			  
-			  var self = this;
-			  var par = (singleton.searchDBVal == singleton.serachDBPrev) ? 
-					  {filter:"ALL"} : {filter:"singleton.searchDBVal"};
-			  $http.get("/readdb", {params: par})
-			  .success(function(data){
-				  self.products = data.store;
-				  $log.log(self.products);
-			  }).error(function(){
-				  alert("server error");
-			  });
+		  controller: function($scope){
+		    this.updateResultSet = function(){
+	        //guard code
+	        if(!_.isEmpty(singleton.searchDBVal) && singleton.searchDBVal == singleton.searchDBPrev){
+	          return;
+	        }
+	        
+	        var self = this;
+	        var par = (singleton.searchDBVal == singleton.searchDBPrev) ? 
+	            {fname: singleton.searchFieldName, value: "ALL"} : 
+	                {fname: singleton.searchFieldName, value: singleton.searchDBVal};
+	        $http.get("/readdb", {params: {filter:par}})
+	        .success(function(data){
+	          self.products = data.store;
+	          $log.log(self.products);
+	        }).error(function(){
+	          alert("server error");
+	        });
+		    };
+		    
+		    var self = this;
+		    $scope.$on('onUpdateResultSet', function(){
+		      self.updateResultSet();
+        });
+		    
+		    this.updateResultSet();
 		  },
 		  controllerAs:"store"
 	  };
   }]);
 	
+  app.directive("storeListSearch", ['singleton', '$log', function(singleton, $log){
+    return {
+      restrict: "E",
+      templateUrl: "/templates/store-list-search.html",
+      controller: function($scope){
+        var self = this;
+        self.subj = "";
+        self.isTimerRunning = false;
+        $scope.dataChanged = function(value){
+          if(self.isTimerRunning){
+            return;
+          }
+          self.isTimerRunning = true;
+          
+          setTimeout(function(){
+            self.isTimerRunning = false;
+            singleton.searchDBPrev = singleton.searchDBVal;
+            singleton.searchDBVal = value;
+            singleton.updateResultSet();
+          }, 1000);
+        }
+      },
+      controllerAs:"storesearch"
+    };
+  }]);
 })();

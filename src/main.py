@@ -5,6 +5,7 @@ import parse_xlsx as parser
 import datamodel
 import json
 from google.appengine.ext import db
+from _ast import Pass
 
 jinja_environment = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
@@ -36,6 +37,16 @@ class MainPage(webapp2.RequestHandler):
 
 class ServiceData(webapp2.RequestHandler):
     def get(self):
+        filter = None
+        try:
+            filter = json.loads(self.request.get('filter'))
+        except Exception:
+            Pass
+        if not filter:   
+            self.response.out.write('{"Error" : "missing parameter \"filter\"}')
+            return
+    
+        query = datamodel.Product.all()        
         data = [{"product":
                  {
                   "EAN": x.ean,
@@ -47,7 +58,7 @@ class ServiceData(webapp2.RequestHandler):
                     "Photo": "*not supported*",
                     "Description": x.description
                   }
-                 } for x in datamodel.Product.all().run()]
+                 } for x in query.run() if filter["value"] == "ALL" or x.category.startswith(filter["value"])]
         result = {"store": data}
         self.response.out.write(json.dumps(result))
 
